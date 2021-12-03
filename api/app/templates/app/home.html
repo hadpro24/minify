@@ -1,0 +1,51 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>My articles</title>
+  </head>
+  <link rel="stylesheet" type="text/css" href="{% static 'main.css' %}">
+  <body class="contenair">
+    	<h1>List films</h1>
+    	<div class="search-field">
+	      <form>
+	      	<input type="search" name="search" value="{{ search }}" placeholder="Search film with title...">
+	      	<input type="submit" class="button-favoir-and-details" value="Search" style="font-size: 21px;">
+	      </form>
+	    </div>
+    	<div class="films-list" >
+    		{% if films %}
+			    {% for film in films %}
+				    <div class="card-film">
+				    	<div class="image">
+					    	<img 
+					    			src="{{ film.image.url }}" 
+					    			alt="{{ film.title }}"/>
+				    	</div>
+				    	<div class="description">
+					    	<h3>{{ film.title }}</h3>
+					    	<h5><strong><em>Year of production : </em></strong>{{ film.released }}</h5>
+					    	<div class="button-two">
+					    		<a type="button" class="button-favoir-and-details" href="#">Details</a>
+					    	</div>
+				    	</div>
+				    </div>
+				  {% endfor %}
+				{% else %}
+					   <p>Not found, try other film title.</p>
+				{% endif %}
+    	</div>
+  </body>
+
+<script type="text/javascript">
+	document.addEventListener('DOMContentLoaded', function() {
+			document.querySelector('input[type=search]').onchange = function(event){
+				console.log('ttttt')
+				if(event.target.value === ''){
+					location.reload();
+				}
+
+			}
+	})
+</script>
+</html>

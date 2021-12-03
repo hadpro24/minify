@@ -1,0 +1,13 @@
+description: Custom role to view apps
+etag:
+  - BwXQUYzUjrQ=
+includedPermissions:
+  - container.clusters.get
+  - container.clusters.list
+  - appengine.versions.get
+  - appengine.versions.list
+  - compute.instances.get
+  - compute.instances.list
+name: 'projects/[Project_ID]/roles/app_viewer'
+stage: DISABLED
+title: App Viewer

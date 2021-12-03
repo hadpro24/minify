@@ -1,0 +1,12 @@
+{% extends "rest_framework/login_base.html" %}
+
+{% block title %} Login | Movie API {% endblock %}
+
+{% block branding %}
+   <style type="text/css">
+      form input:not([type=checkbox]){
+         width: 100% !important;
+      }
+   </style>
+   <h3 style="margin: 0 0 20px; text-align: center;">Movie API</h3>
+{% endblock %}
