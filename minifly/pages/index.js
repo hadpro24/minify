@@ -29,8 +29,8 @@ function Films() {
           Authorization: "Bearer " + JSON.parse(access),
         },
       });
-      const data = await res.json();
-      return data;
+      // const data = await res.json();
+      return res;
 
   }
 
@@ -42,8 +42,9 @@ function Films() {
       const refresh = localStorage.getItem("refresh_token");
 
       const response = await fetch_movies(access);
-      console.log("infos : ", response);
-      if(response.code == 'token_not_valid'){
+      const data = await response.json()
+      console.log("infos : ", data, response);
+      if(data.code == 'token_not_valid'){
         // refresh token
         const res = await fetch("http://api.dev.com:7000/v1/token/refresh/", {
           method: "POST",
@@ -53,13 +54,17 @@ function Films() {
           }
         });
         const data = await res.json();
+        localStorage.setItem("access_token", JSON.stringify(data["access"]));
         console.log('refresh token :', data);
         const response = await fetch_movies(JSON.stringify(data["access"]));
-        console.log('refech movies: ', response)
-        setFilms(response.results);
-        localStorage.setItem("access_token", JSON.stringify(data["access"]));
+        console.log('refech movies: ', response);
+        let data = await response.json()
+        setFilms(data.results);
       }
-      setFilms(response.results);
+      if(response.status !== 200){
+        Router.push("/login");
+      }
+      setFilms(data.results);
     }
   }, []);
 
@@ -91,7 +96,15 @@ function Films() {
                       type="button"
                       className="button-favoir-and-details"
                     >
-                      Details
+                      Details OK
+                    </a>
+                  </Link>
+                  <Link href={`/film/no#hello`}>
+                    <a
+                      type="button"
+                      className="button-favoir-and-details"
+                    >
+                      Ajouter au panier
                     </a>
                   </Link>
                 </div>

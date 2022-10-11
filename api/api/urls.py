@@ -21,9 +21,9 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 from django.views.generic import TemplateView
-from rest_framework.schemas import get_schema_view
-from django.contrib.auth.decorators import login_required
-from django.contrib.admin.views.decorators import staff_member_required
+# from rest_framework.schemas import get_schema_view
+# from django.contrib.auth.decorators import login_required
+# from django.contrib.admin.views.decorators import staff_member_required
 
 from django.conf.urls import (
     handler404, handler500
@@ -48,19 +48,19 @@ urlpatterns = [
     path('v1/auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('v1/', include('app.urls')),
     #doc
-    path('', staff_member_required(
-        TemplateView.as_view(template_name='swagger-ui.html',
-            extra_context={'schema_url': 'openapi-schema'}),
-            login_url='rest_framework:login'
-        ),
-    name='swagger-ui'),
+    # path('', staff_member_required(
+    #     TemplateView.as_view(template_name='swagger-ui.html',
+    #         extra_context={'schema_url': 'openapi-schema'}),
+    #         login_url='rest_framework:login'
+    #     ),
+    # name='swagger-ui'),
     #redoc
-    path('openapi', get_schema_view(title='Movie API',
-        description="Documentation Movie API", version="1.0.0"),
-        name="openapi-schema"),
-    path('redoc', staff_member_required(TemplateView.as_view(
-        template_name="redoc.html",
-        extra_context={'schema_url': 'openapi-schema'}
-        ), login_url='rest_framework:login'
-        ), name='redoc'),
+    # path('openapi', get_schema_view(title='Movie API',
+    #     description="Documentation Movie API", version="1.0.0"),
+    #     name="openapi-schema"),
+    # path('redoc', staff_member_required(TemplateView.as_view(
+    #     template_name="redoc.html",
+    #     extra_context={'schema_url': 'openapi-schema'}
+    #     ), login_url='rest_framework:login'
+    #     ), name='redoc'),
 ]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) #only dev

@@ -12,3 +12,7 @@ class FilmViewSet(viewsets.ReadOnlyModelViewSet):
 	queryset = Film.objects.all()
 	serializer_class = FilmSerializer
 	lookup_field = 'pk'
+
+	def get_queryset(self):
+		print(self.request.user)
+		return super().get_queryset()
