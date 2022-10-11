@@ -3,7 +3,8 @@
 ## Authorization Server
 
 ```bash
-cd iam
+python3 -m venv env && source env/bin/activate
+cd iam && git checkout v1
 
 pip install -r requirements.txt
 

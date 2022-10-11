@@ -4,13 +4,12 @@ import Link from 'next/link'
 import Router from "next/router";
 
 const Film = () => {
-  const router = useRouter()
-  const { id } = router.query
-
   const [access, setAcess] = useState("");
   const [film, setFilm] = useState({})
 
   useEffect(async() => {
+      const router = useRouter()
+      const { id } = router.query;
       const access = localStorage.getItem("access_token");
       if(JSON.parse(access) == null){
           Router.push('/login')
@@ -28,7 +27,7 @@ const Film = () => {
   }, [])
 
   return (
-    <div className="contenair">  
+    <div className="contenair">
       <div className="films-list">
         <div className="card-film-detail">
             <div className="description">
@@ -51,8 +50,8 @@ const Film = () => {
             </div>
             <div className="image-detail">
             { film &&
-              <img 
-                  src={film.image} 
+              <img
+                  src={film.image}
                   alt={film.title}/>
             }
             </div>
