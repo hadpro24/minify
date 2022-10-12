@@ -6,6 +6,9 @@ const MainStoreContext = React.createContext();
 export default function MainStoreContextProvider({ children }) {
   const [store, setStore] = useLocalStorage("app::main_store", {
     cart: {},
+    tokens: {
+      // accessToken: "init_fake-access-token",
+    },
   });
 
   const cartItems = Object.values(store.cart);
@@ -19,7 +22,6 @@ export default function MainStoreContextProvider({ children }) {
       ...prevStore,
       cart: { ...prevStore.cart, [item.id]: item },
     }));
-
   const removeItemFromCart = (itemId) =>
     setStore((prevStore) => {
       const newCart = { ...prevStore.cart };
@@ -37,8 +39,18 @@ export default function MainStoreContextProvider({ children }) {
       cart: {},
     }));
 
+  const updateTokens = (newTokens = {}) =>
+    setStore((prevStore) => ({
+      ...prevStore,
+      tokens: { ...newTokens },
+    }));
+
+  const { accessToken, refreshToken } = store.tokens;
+
   const value = {
     store,
+    accessToken,
+    refreshToken,
     cartItems,
     cartTotal,
     cartLength,
@@ -46,6 +58,7 @@ export default function MainStoreContextProvider({ children }) {
     removeItemFromCart,
     isItemInCart,
     clearCart,
+    updateTokens,
   };
   return (
     <MainStoreContext.Provider value={value}>

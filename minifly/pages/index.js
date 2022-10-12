@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import Router from "next/router";
+import { useRouter } from "next/router";
 import { Modal, Button, Row, Container, Col } from "react-bootstrap";
 import MovieCard from "../components/movie-card";
 import dynamic from "next/dynamic";
@@ -7,12 +7,21 @@ const TopNavbar = dynamic(() => import("/components/navbar"), {
   ssr: false,
 });
 import { fetchMovies } from "../services";
+import { useMainStore } from "../context/MainStorePrivider";
 
 function Films() {
   const [films, setFilms] = useState([]);
+  const { accessToken } = useMainStore();
+  const router = useRouter();
 
   useEffect(() => {
-    fetchMovies().then((data) => {
+    if (!accessToken) {
+      router.replace("/login");
+    }
+  }, [accessToken]);
+
+  useEffect(() => {
+    fetchMovies(accessToken).then((data) => {
       setFilms(
         data.map((movie) => ({
           id: movie.pk,
@@ -20,7 +29,7 @@ function Films() {
         }))
       );
     });
-  }, []);
+  }, [accessToken]);
 
   // useEffect(async () => {
   //   const access = localStorage.getItem("access_token");

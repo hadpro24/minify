@@ -1,34 +1,19 @@
 import { useState, useEffect } from "react";
-import Router from "next/router";
-import Form from "react-bootstrap/Form";
-import Button from "react-bootstrap/Button";
+import { useRouter } from "next/router";
 import { GoogleLogin } from "react-google-login";
+import { useMainStore } from "../context/MainStorePrivider";
 
 export default function LoginPage() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-
-  useEffect(() => {
-    const access = localStorage.getItem("access_token");
-    if (JSON.parse(access) != null) {
-      Router.push("/");
-    }
-  }, []);
-
+  const { accessToken, updateTokens } = useMainStore();
+  const router = useRouter();
   const [inputs, setInputs] = useState({
     email: "",
     password: "",
   });
-
   const [attemptingToLogin, setAttemptingToLogin] = useState(false);
-
   const [url_auth, setUrl_token] = useState(
     "http://auth.dev.com:5000/authorize/?response_type=code&client_id=aorF1PBeUTI5n26ItF92JLgUfR304ahB14xMlvFo&redirect_uri=http://dev.com:3000/retreive_access_token"
   );
-
-  function validateForm() {
-    return email.length > 0 && password.length > 0;
-  }
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -38,23 +23,22 @@ export default function LoginPage() {
   const openLogin = () => {
     let popup = window.open({ url_auth }, "popup", "width=600,height=600");
 
-    const timer = setInterval(function() {
-        if(popup.closed) {
-            clearInterval(timer);
-            Router.push("/");
-        }
+    const timer = setInterval(function () {
+      if (popup.closed) {
+        clearInterval(timer);
+      }
     }, 1000);
   };
 
   const responseGoogle = (response) => {
-    console.log(response);
-    localStorage.setItem("access_token", JSON.stringify(response['tokenId']));
-    Router.push('/')
+    updateTokens({
+      accessToken: response["tokenId"],
+    });
   };
 
   const responseErrorGoogle = (error) => {
     console.log(error);
-  }
+  };
 
   const onLogin = async (e) => {
     e.preventDefault();
@@ -72,10 +56,18 @@ export default function LoginPage() {
     });
     const auth = await res.json();
     console.log(auth);
-    localStorage.setItem("access_token", JSON.stringify(auth["access"]));
-    localStorage.setItem("refresh_token", JSON.stringify(auth["refresh"]));
-    Router.push("/");
+    updateTokens({
+      accessToken: auth["access"],
+      refreshToken: auth["refresh"],
+    });
   };
+
+  useEffect(() => {
+    console.log({ loginToken: accessToken });
+    if (accessToken) {
+      router.replace("/");
+    }
+  }, [accessToken]);
 
   return (
     <div className="container" style={{ marginTop: "30px" }}>
@@ -86,52 +78,55 @@ export default function LoginPage() {
         >
           <div className="row-fluid">
             <div>
-              <p style={{ textAlign: "center" }}>Minifly</p>
+              <h1 className="text-center mb-4">Minifly</h1>
               <form onSubmit={onLogin}>
                 <div id="div_id_username" className="clearfix control-group">
                   <div className="form-group">
-                    <label htmlFor="id_username">Email:</label>
+                    <label htmlFor="email">Email</label>
                     <input
                       className="form-control"
                       type="text"
                       name="email"
                       id="email"
                       placeholder="Saisissez votre mail"
-                      required={true}
                       value={inputs.email}
                       onChange={handleInputChange}
+                      required
+                      style={{ height: 48 }}
                     />
                   </div>
                 </div>
 
                 <div id="div_id_password" className="clearfix control-group ">
                   <div className="form-group">
-                    <label htmlFor="id_password">Password:</label>
+                    <label htmlFor="password">Password</label>
                     <input
                       className="form-control"
                       type="password"
                       name="password"
-                      id="pwd"
+                      id="password"
                       placeholder="Saisissez votre passe"
-                      required={true}
                       value={inputs.password}
                       onChange={handleInputChange}
+                      required
+                      style={{ height: 48 }}
                     />
                   </div>
                 </div>
 
                 <input
                   type="submit"
-                  value="login"
-                  className="btn btn-primary btn-block"
+                  value="Log in"
+                  className="btn btn-primary btn-block btn-lg"
                 />
               </form>
               <div className="loginBtn">
                 <a
                   target="popup"
                   href={url_auth}
-                  className="btn btn-default form-control"
+                  className="btn btn-light form-control"
                   onClick={openLogin}
+                  style={{ height: 48, paddingTop: 14 }}
                 >
                   Login with Server Auth
                 </a>

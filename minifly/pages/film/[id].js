@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { fetchSingleMovie } from "/services";
-import { isClient } from "/helpers";
 import { Col, Container, Row } from "react-bootstrap";
 import dynamic from "next/dynamic";
+import { useMainStore } from "../../context/MainStorePrivider";
 const TopNavbar = dynamic(() => import("/components/navbar"), {
   ssr: false,
 });
@@ -15,17 +15,16 @@ const MovieDetailsCard = dynamic(
 );
 
 const Film = () => {
-  // const [access, setAcess] = useState("");
   const [film, setFilm] = useState({});
-  const accessToken = isClient() && localStorage.getItem("access_token");
+  const { accessToken } = useMainStore();
   const router = useRouter();
   const { id: movieId } = router.query;
 
-  // useEffect(() => {
-  //   if (!JSON.parse(accessToken)) {
-  //     router.replace("/login");
-  //   }
-  // }, []);
+  useEffect(() => {
+    if (!accessToken) {
+      router.replace("/login");
+    }
+  }, [accessToken]);
 
   useEffect(() => {
     fetchSingleMovie({ movieId, accessToken }).then((movie) =>
@@ -48,11 +47,6 @@ const Film = () => {
         </Col>
       </Row>
     </Container>
-    // <div className="contenair">
-    //   <div className="films-list">
-
-    //   </div>
-    // </div>
   );
 };
 

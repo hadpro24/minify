@@ -40,9 +40,10 @@ export const showInfoAlert = ({ msg, id, autoClose }) => {
 export function useLocalStorage(key, initialValue) {
   // State to store our value
   // Pass initial state function to useState so logic is only executed once
-  const initialize = (key) => {
+  const initialize = (key, initialValue) => {
     console.log("INIT");
     if (typeof window === "undefined") {
+      console.log({ initialValue });
       return initialValue;
     }
     try {
@@ -57,8 +58,16 @@ export function useLocalStorage(key, initialValue) {
     }
   };
 
-  const [storedValue, setStoredValue] = useState(initialize(key));
-  useEffect(() => setStoredValue(initialize(key)), []);
+  const [storedValue, setStoredValue] = useState(() =>
+    initialize(key, initialValue)
+  );
+  // useEffect(() => {
+  //   console.log("INIT useEff", { key, initialValue });
+  //   setStoredValue(initialize(key, initialValue));
+  // }, [key, initialValue]);
+  useEffect(() => {
+    window.localStorage.setItem(key, JSON.stringify(storedValue));
+  }, [storedValue, key]);
   // Return a wrapped version of useState's setter function that ...
   // ... persists the new value to localStorage.
 
@@ -69,10 +78,10 @@ export function useLocalStorage(key, initialValue) {
         value instanceof Function ? value(storedValue) : value;
       // Save state
       setStoredValue(valueToStore);
-      // Save to local storage
-      if (typeof window !== "undefined") {
-        window.localStorage.setItem(key, JSON.stringify(valueToStore));
-      }
+      // // Save to local storage
+      // if (typeof window !== "undefined") {
+      //   window.localStorage.setItem(key, JSON.stringify(valueToStore));
+      // }
     } catch (error) {
       // A more advanced implementation would handle the error case
       console.log(error);

@@ -6,7 +6,12 @@ import { createOrder } from "../services";
 
 const PaypalForm = ({ orderId, currency = "USD", refresh, closeCartModal }) => {
   const [isBtnInit, setIsBtnInit] = useState(false);
-  const { cartTotal: totalAmount, cartItems, clearCart } = useMainStore();
+  const {
+    cartTotal: totalAmount,
+    cartItems,
+    clearCart,
+    accessToken,
+  } = useMainStore();
 
   const [{ isResolved }, dispatch] = usePayPalScriptReducer();
 
@@ -28,7 +33,7 @@ const PaypalForm = ({ orderId, currency = "USD", refresh, closeCartModal }) => {
     async (data, actions) => {
       // post cart order to API and get the orderId
       const orderId = await createOrder({
-        accessToken: "fake-access",
+        accessToken,
         items: cartItems.map((item) => item.id),
       });
 

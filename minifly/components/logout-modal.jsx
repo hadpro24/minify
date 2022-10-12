@@ -1,10 +1,13 @@
+import { useRouter } from "next/router";
 import { Modal, Button } from "react-bootstrap";
+import { useMainStore } from "../context/MainStorePrivider";
 
 export default function LogoutModal({ show, handleClose }) {
+  const router = useRouter();
+  const { updateTokens } = useMainStore();
   const handleConfirmLogout = () => {
     console.log("USER LOGGED OUT");
-    window.localStorage.removeItem("access_token");
-    window.location.replace("/login");
+    updateTokens(null);
   };
 
   return (

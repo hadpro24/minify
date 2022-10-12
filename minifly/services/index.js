@@ -55,7 +55,7 @@ export async function createOrder({ accessToken, items }) {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      //   Authorization: "Bearer " + JSON.parse(accessToken),
+      Authorization: `Bearer ${accessToken}`,
     },
     body: JSON.stringify({ items }),
   });
