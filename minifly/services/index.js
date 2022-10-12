@@ -48,3 +48,19 @@ export async function fetchSingleMovie({ movieId, accessToken }) {
   return movie;
   // return res;
 }
+
+export async function createOrder({ accessToken, items }) {
+  const url = "/api/order";
+  const res = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      //   Authorization: "Bearer " + JSON.parse(accessToken),
+    },
+    body: JSON.stringify({ items }),
+  });
+  const data = await res.json();
+
+  console.log({ orderData: data });
+  return data?.order_id;
+}

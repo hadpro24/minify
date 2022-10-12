@@ -2,7 +2,10 @@ import { useState, useEffect } from "react";
 import Router from "next/router";
 import { Modal, Button, Row, Container, Col } from "react-bootstrap";
 import MovieCard from "../components/movie-card";
-import TopNavbar from "../components/navbar";
+import dynamic from "next/dynamic";
+const TopNavbar = dynamic(() => import("/components/navbar"), {
+  ssr: false,
+});
 import { fetchMovies } from "../services";
 
 function Films() {

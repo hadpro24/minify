@@ -1,9 +1,47 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
+
+export const showSuccesAlert = ({ msg, id, autoClose }) => {
+  toast.success(
+    () => (
+      <strong style={{ display: "block", textAlign: "center" }}>{msg}</strong>
+    ),
+    {
+      autoClose,
+      toastId: id,
+    }
+  );
+};
+
+export const showErrorAlert = ({ msg, id }) => {
+  toast.error(
+    () => (
+      <strong style={{ display: "block", textAlign: "center" }}>{msg}</strong>
+    ),
+    {
+      autoClose: false,
+      toastId: id,
+    }
+  );
+};
+
+export const showInfoAlert = ({ msg, id, autoClose }) => {
+  toast.info(
+    () => (
+      <strong style={{ display: "block", textAlign: "center" }}>{msg}</strong>
+    ),
+    {
+      autoClose,
+      toastId: id,
+    }
+  );
+};
 
 export function useLocalStorage(key, initialValue) {
   // State to store our value
   // Pass initial state function to useState so logic is only executed once
-  const [storedValue, setStoredValue] = useState(() => {
+  const initialize = (key) => {
+    console.log("INIT");
     if (typeof window === "undefined") {
       return initialValue;
     }
@@ -17,9 +55,13 @@ export function useLocalStorage(key, initialValue) {
       console.log(error);
       return initialValue;
     }
-  });
+  };
+
+  const [storedValue, setStoredValue] = useState(initialize(key));
+  useEffect(() => setStoredValue(initialize(key)), []);
   // Return a wrapped version of useState's setter function that ...
   // ... persists the new value to localStorage.
+
   const setValue = (value) => {
     try {
       // Allow value to be a function so we have same API as useState

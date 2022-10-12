@@ -31,6 +31,12 @@ export default function MainStoreContextProvider({ children }) {
       };
     });
 
+  const clearCart = () =>
+    setStore((prevStore) => ({
+      ...prevStore,
+      cart: {},
+    }));
+
   const value = {
     store,
     cartItems,
@@ -39,6 +45,7 @@ export default function MainStoreContextProvider({ children }) {
     addItemToCart,
     removeItemFromCart,
     isItemInCart,
+    clearCart,
   };
   return (
     <MainStoreContext.Provider value={value}>

@@ -1,6 +1,7 @@
 import { Modal, Button, Alert } from "react-bootstrap";
 import { useMainStore } from "../context/MainStorePrivider";
 import CartItem from "./cart-item";
+import PaypalForm from "./paypal-form";
 
 export default function CartModal({ show, handleClose, handleConfirm }) {
   const { cartItems, cartTotal, cartLength } = useMainStore();
@@ -15,7 +16,7 @@ export default function CartModal({ show, handleClose, handleConfirm }) {
         {!!cartLength && (
           <ul className="p-0 m-0">
             {cartItems.map((item) => (
-              <CartItem key={item} movie={item} />
+              <CartItem key={item.id} movie={item} />
             ))}
             <li
               className="d-flex justify-content-between pt-3"
@@ -37,9 +38,7 @@ export default function CartModal({ show, handleClose, handleConfirm }) {
           <Button variant="outline-secondary" size="lg" onClick={handleClose}>
             Close
           </Button>
-          <Button variant="primary" size="lg" onClick={handleConfirm}>
-            Confirm
-          </Button>
+          <PaypalForm closeCartModal={handleClose} />
         </Modal.Footer>
       )}
     </Modal>

@@ -1,11 +1,18 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import Link from "next/link";
-import { fetchMovies, fetchSingleMovie } from "../../services";
-import { isClient } from "../../helpers";
-import { Button, Col, Container, Row } from "react-bootstrap";
-import TopNavbar from "../../components/navbar";
-import { useMainStore } from "../../context/MainStorePrivider";
+import { fetchSingleMovie } from "/services";
+import { isClient } from "/helpers";
+import { Col, Container, Row } from "react-bootstrap";
+import dynamic from "next/dynamic";
+const TopNavbar = dynamic(() => import("/components/navbar"), {
+  ssr: false,
+});
+const MovieDetailsCard = dynamic(
+  () => import("/components/movie-details-card"),
+  {
+    ssr: false,
+  }
+);
 
 const Film = () => {
   // const [access, setAcess] = useState("");
@@ -13,9 +20,6 @@ const Film = () => {
   const accessToken = isClient() && localStorage.getItem("access_token");
   const router = useRouter();
   const { id: movieId } = router.query;
-
-  const { addItemToCart, isItemInCart } = useMainStore();
-  const isMovieInCart = isItemInCart(film.id);
 
   // useEffect(() => {
   //   if (!JSON.parse(accessToken)) {
@@ -27,7 +31,7 @@ const Film = () => {
     fetchSingleMovie({ movieId, accessToken }).then((movie) =>
       setFilm(movie ? movie : {})
     );
-  }, []);
+  }, [movieId, accessToken]);
 
   console.log({ film });
 
@@ -40,55 +44,7 @@ const Film = () => {
       </Row>
       <Row className="g-5 mt-0">
         <Col>
-          <div className="card-film-detail">
-            <Col md="12" lg="8">
-              <div className="description p-4 pe-5 d-flex flex-column">
-                {film && (
-                  <div>
-                    <h3 className="fw-bold">{film.title}</h3>
-                    <p className="mb-3">{film.description}</p>
-                    <h5 className="fw-500 border-bottom d-flex justify-content-between pb-2">
-                      <span>Year of production</span>
-                      {film.released}
-                    </h5>
-                    <h5 className="fw-500 border-bottom d-flex justify-content-between pb-2">
-                      <span>Runtime</span>
-                      {film.runtime}
-                    </h5>
-                    <h5 className="fw-500 border-bottom d-flex justify-content-between pb-2">
-                      <span>Country</span>
-                      {film.country}
-                    </h5>
-                    <h5 className="fw-500 border-bottom d-flex justify-content-between pb-2">
-                      <span>Rated</span>
-                      {film.rated}
-                    </h5>
-                  </div>
-                )}
-                <div className="mt-4">
-                  <Button
-                    variant="success"
-                    size="lg"
-                    disabled={isMovieInCart}
-                    onClick={addItemToCart.bind(null, film)}
-                  >
-                    {!isMovieInCart && "Add to cart"}
-                    {isMovieInCart && "✓ Added to cart"}
-                  </Button>
-                </div>
-              </div>
-            </Col>
-            <Col
-              md="12"
-              lg="4"
-              className="image-detail"
-              aria-label={film.title}
-              style={{
-                backgroundImage: `url(/${film.image})`,
-                minHeight: 300,
-              }}
-            />
-          </div>
+          <MovieDetailsCard movie={film} />
         </Col>
       </Row>
     </Container>

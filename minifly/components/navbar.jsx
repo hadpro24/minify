@@ -8,10 +8,12 @@ import Link from "next/link";
 
 const CartModal = dynamic(() => import("/components/cart-modal"), {
   loading: LoadingComponent,
+  ssr: false,
 });
 
 const LogoutModal = dynamic(() => import("/components/logout-modal"), {
   loading: LoadingComponent,
+  ssr: false,
 });
 
 const TopNavbar = ({ backToHomeBtn }) => {
