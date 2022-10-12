@@ -1,132 +1,74 @@
 import { useState, useEffect } from "react";
 import Router from "next/router";
-import Link from "next/link";
-import Head from "next/head";
-import Image from "next/image";
-import styles from "../styles/Home.module.css";
-
-import { Modal, Button } from "react-bootstrap";
+import { Modal, Button, Row, Container, Col } from "react-bootstrap";
+import MovieCard from "../components/movie-card";
+import TopNavbar from "../components/navbar";
+import { fetchMovies } from "../services";
 
 function Films() {
   const [films, setFilms] = useState([]);
 
-  const [show, setShow] = useState(false);
-
-  const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
-  const handleConfirm = () => {
-    console.log("USER LOGGED OUT");
-    localStorage.removeItem("access_token");
-    Router.push("/login");
-    setShow(false);
-  };
-
-  const fetch_movies = async(access) => {
-      const res = await fetch("http://api.dev.com:7000/v1/films", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + JSON.parse(access),
-        },
-      });
-      // const data = await res.json();
-      return res;
-
-  }
-
-  useEffect(async () => {
-    const access = localStorage.getItem("access_token");
-    if (JSON.parse(access) == null) {
-      Router.push("/login");
-    } else {
-      const refresh = localStorage.getItem("refresh_token");
-
-      const response = await fetch_movies(access);
-      const data = await response.json()
-      console.log("infos : ", data, response);
-      if(data.code == 'token_not_valid'){
-        // refresh token
-        const res = await fetch("http://api.dev.com:7000/v1/token/refresh/", {
-          method: "POST",
-          body: JSON.stringify({'refresh': JSON.parse(refresh)}),
-          headers: {
-            "Content-Type": "application/json",
-          }
-        });
-        const data = await res.json();
-        localStorage.setItem("access_token", JSON.stringify(data["access"]));
-        console.log('refresh token :', data);
-        const response = await fetch_movies(JSON.stringify(data["access"]));
-        console.log('refech movies: ', response);
-        let data = await response.json()
-        setFilms(data.results);
-      }
-      if(response.status !== 200){
-        Router.push("/login");
-      }
-      setFilms(data.results);
-    }
+  useEffect(() => {
+    fetchMovies().then((data) => {
+      setFilms(
+        data.map((movie) => ({
+          id: movie.pk,
+          ...movie.fields,
+        }))
+      );
+    });
   }, []);
 
+  // useEffect(async () => {
+  //   const access = localStorage.getItem("access_token");
+  //   if (JSON.parse(access) == null) {
+  //     Router.push("/login");
+  //   } else {
+  //     const refresh = localStorage.getItem("refresh_token");
+
+  //     const response = await fetchMovies(access);
+  //     const data = await response.json()
+  //     console.log("infos : ", data, response);
+  //     if(data.code == 'token_not_valid'){
+  //       // refresh token
+  //       const res = await fetch("http://api.dev.com:7000/v1/token/refresh/", {
+  //         method: "POST",
+  //         body: JSON.stringify({'refresh': JSON.parse(refresh)}),
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         }
+  //       });
+  //       const data = await res.json();
+  //       localStorage.setItem("access_token", JSON.stringify(data["access"]));
+  //       console.log('refresh token :', data);
+  //       const response = await fetchMovies(JSON.stringify(data["access"]));
+  //       console.log('refech movies: ', response);
+  //       let data = await response.json()
+  //       setFilms(data.results);
+  //     }
+  //     if(response.status !== 200){
+  //       Router.push("/login");
+  //     }
+  //     setFilms(data.results);
+  //   }
+  // }, []);
+
   return (
-    <div className="contenair">
-      <div style={{ textAlign: "right" }}>
-        <button className="btn btn-primary" onClick={handleShow}>
-          Log out
-        </button>
-      </div>
-      <div className="films-list">
+    <Container className="py-5">
+      <Row>
+        <Col className="mb-5">
+          <TopNavbar />
+        </Col>
+      </Row>
+      <Row className="g-5 mt-0">
         {films &&
           films.map((film) => (
-            <div className="card-film" key={film.id}>
-              <div className="image">
-                <img src={film.image} alt={film.title} />
-              </div>
-              <div className="description">
-                <h3>{film.title}</h3>
-                <h5 style={{fontWeight:400}}>
-                  <strong>
-                    <em>Year of production : </em>
-                  </strong>
-                  {film.released}
-                </h5>
-                <div className="button-two">
-                  <Link href={`/film/${film.id}`}>
-                    <a
-                      type="button"
-                      className="button-favoir-and-details"
-                    >
-                      Details OK
-                    </a>
-                  </Link>
-                  <Link href={`/film/no#hello`}>
-                    <a
-                      type="button"
-                      className="button-favoir-and-details"
-                    >
-                      Ajouter au panier
-                    </a>
-                  </Link>
-                </div>
-              </div>
-            </div>
+            <Col key={film.id} md="6" lg="4">
+              <MovieCard movie={film} />
+            </Col>
           ))}
-      </div>
-
-      <Modal show={show} onHide={handleClose}>
-        <Modal.Header closeButton>
-          <Modal.Title>Log out</Modal.Title>
-        </Modal.Header>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
-            Cancel
-          </Button>
-          <Button variant="primary" onClick={handleConfirm}>
-            Confirm
-          </Button>
-        </Modal.Footer>
-      </Modal>
-    </div>
+      </Row>
+    </Container>
   );
 }
 

@@ -5,9 +5,14 @@ import "../styles/prettify.css";
 import "../styles/default.css";
 import "../styles/globals.css";
 import "../styles/main.css";
+import MainStoreContextProvider from "../context/MainStorePrivider";
 
 function MyApp({ Component, pageProps }) {
-  return <Component {...pageProps} />;
+  return (
+    <MainStoreContextProvider>
+      <Component {...pageProps} />
+    </MainStoreContextProvider>
+  );
 }
 
 export default MyApp;
